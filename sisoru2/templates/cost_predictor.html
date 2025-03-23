@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cost Predictor - SISORU</title>
+  <link rel="stylesheet" href="../static/css/styles.css">
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h1>SISORU</h1>
+    <nav>
+      <a href="dashboard.html">📊 Dashboard</a>
+      <a href="crop_advisor.html">🌱 Crop Advisor</a>
+      <a href="cost_predictor.html">💰 Cost Predictor</a>
+      <a href="water_analysis.html">💧 Water Analysis</a>
+    </nav>
+    <button onclick="logout()">🚪 Logout</button>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content">
+    <h2>Crop Cost Prediction</h2>
+    <form>
+      <select>
+        <option>Select Crop</option>
+        <option>Cotton</option>
+        <option>Sugarcane</option>
+      </select>
+      <input type="number" placeholder="Land Area (ha)">
+      <button>Calculate Cost</button>
+    </form>
+    <div class="results">
+      <p>Estimated Cost: ₹42,300/ha</p>
+      <p>Expected Value: ₹68,500/ha</p>
+    </div>
+  </div>
+
+  <script src="../static/js/script.js"></script>
+</body>
+</html>
