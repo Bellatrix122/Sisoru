@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SISORU - Login/Register</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .auth-container {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .input-field:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    .btn-primary {
+      background: #3b82f6;
+      color: white;
+      transition: background 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background: #2563eb;
+    }
+
+    .tab-active {
+      color: #3b82f6;
+      border-bottom: 2px solid #3b82f6;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+  <!-- Auth Container -->
+  <div class="auth-container w-full max-w-md">
+    <div class="px-6 py-8">
+      <!-- Logo -->
+      <div class="text-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">SISORU</h1>
+      
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex justify-center mb-6">
+        <button id="loginTab" class="px-4 py-2 font-medium tab-active">Login</button>
+        <button id="registerTab" class="px-4 py-2 font-medium text-gray-500">Register</button>
+      </div>
+
+      <!-- Error Message -->
+      <div id="errorMessage" class="hidden mb-4 px-4 py-2 bg-red-100 text-red-600 rounded text-sm"></div>
+
+      <!-- Login Form -->
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input type="email" placeholder="Enter your email" required
+                 class="input-field w-full px-3 py-2 border border-gray-300 rounded">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <input type="password" placeholder="Enter your password" required
+                 class="input-field w-full px-3 py-2 border border-gray-300 rounded">
+        </div>
+        <button type="submit" class="btn-primary w-full py-2 rounded">
+          Sign In
+        </button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="registerForm" class="space-y-4 hidden">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+          <input type="text" placeholder="Enter your full name" required
+                 class="input-field w-full px-3 py-2 border border-gray-300 rounded">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input type="email" placeholder="Enter your email" required
+                 class="input-field w-full px-3 py-2 border border-gray-300 rounded">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <input type="password" placeholder="Create a password" required
+                 class="input-field w-full px-3 py-2 border border-gray-300 rounded">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+          <input type="password" placeholder="Confirm your password" required
+                 class="input-field w-full px-3 py-2 border border-gray-300 rounded">
+        </div>
+        <button type="submit" class="btn-primary w-full py-2 rounded">
+          Create Account
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const loginTab = document.getElementById('loginTab');
+    const registerTab = document.getElementById('registerTab');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const errorMessage = document.getElementById('errorMessage');
+
+    // Tab switching
+    function switchTab(tab, formToShow, formToHide) {
+      loginTab.classList.remove('tab-active', 'text-blue-600');
+      registerTab.classList.remove('tab-active', 'text-blue-600');
+      tab.classList.add('tab-active', 'text-blue-600');
+      
+      formToHide.classList.add('hidden');
+      formToShow.classList.remove('hidden');
+    }
+
+    loginTab.addEventListener('click', () => switchTab(loginTab, loginForm, registerForm));
+    registerTab.addEventListener('click', () => switchTab(registerTab, registerForm, loginForm));
+
+    // Registration Handler
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = {
+        username: document.querySelector('#registerForm input[type="text"]').value,
+        email: document.querySelector('#registerForm input[type="email"]').value,
+        password: document.querySelector('#registerForm input[type="password"]').value
+      };
+
+      try {
+        const response = await fetch('http://localhost:5000/register', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(formData)
+        });
+        
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Registration failed');
+        
+        alert('Registration successful! Please login.');
+        switchTab(loginTab, loginForm, registerForm);
+      } catch (error) {
+        errorMessage.textContent = error.message;
+        errorMessage.classList.remove('hidden');
+      }
+    });
+
+    // Login Handler
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = {
+        email: document.querySelector('#loginForm input[type="email"]').value,
+        password: document.querySelector('#loginForm input[type="password"]').value
+      };
+
+      try {
+        const response = await fetch('http://localhost:5000/login', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(formData),
+          credentials: 'include'  // Include cookies for session management
+        });
+        
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Login failed');
+        
+        // Redirect to index.html
+        window.location.href = data.redirect;
+      } catch (error) {
+        errorMessage.textContent = error.message;
+        errorMessage.classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

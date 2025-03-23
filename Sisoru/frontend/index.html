@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SISORU - Agricultural Intelligence</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-green: #16a34a;
+      --agri-brown: #78350f;
+      --water-blue: #2563eb;
+    }
+
+    .crop-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .prediction-badge {
+      background: linear-gradient(135deg, rgba(22, 163, 74, 0.2) 0%, rgba(34, 197, 94, 0.2) 100%);
+    }
+
+    .water-warning {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex">
+  <!-- Sidebar -->
+  <div class="w-64 bg-gradient-to-b from-green-800 to-green-900 text-white min-h-screen p-6 flex flex-col">
+    <h1 class="text-2xl font-bold text-center mb-8">SISORU</h1>
+    
+    <!-- Navigation -->
+    <nav class="flex-1 space-y-2">
+      <button onclick="showSection('dashboard')" class="nav-item">📊 Dashboard</button>
+      <button onclick="showSection('crop-advisor')" class="nav-item">🌱 Crop Advisor</button>
+      <button onclick="showSection('cost-predictor')" class="nav-item">💰 Cost Predictor</button>
+      <button onclick="showSection('water-analysis')" class="nav-item">💧 Water Analysis</button>
+    </nav>
+    
+    <button onclick="logout()" class="mt-8 p-3 hover:bg-red-500/20 rounded-lg">🚪 Logout</button>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-1 p-8">
+    <!-- Dashboard -->
+    <div id="dashboard" class="content-card">
+      <h2 class="text-3xl font-bold mb-6">District Agricultural Overview</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-green-50 p-6 rounded-xl">
+          <h3 class="font-semibold mb-2">Top Performing Crop</h3>
+          <p class="text-2xl">Rice</p>
+          <p class="text-sm text-gray-600">Avg. Yield: 5.2 ton/ha</p>
+        </div>
+        <div class="bg-blue-50 p-6 rounded-xl">
+          <h3 class="font-semibold mb-2">Water Availability</h3>
+          <p class="text-2xl">62%</p>
+          <p class="text-sm text-gray-600">(-8% from last season)</p>
+        </div>
+        <div class="bg-amber-50 p-6 rounded-xl">
+          <h3 class="font-semibold mb-2">Production Cost</h3>
+          <p class="text-2xl">₹34,500/ha</p>
+          <p class="text-sm text-gray-600">(+12% YoY)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Crop Advisor -->
+    <div id="crop-advisor" class="content-card hidden">
+      <h2 class="text-3xl font-bold mb-6">District-Wise Crop Recommendations</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <div class="bg-white p-6 rounded-lg shadow-sm mb-6">
+            <h3 class="font-semibold mb-4">District Selection</h3>
+            <select class="w-full p-3 border rounded-lg mb-4">
+              <option>Select District</option>
+              <option>Nashik</option>
+              <option>Pune</option>
+              <option>Aurangabad</option>
+            </select>
+            
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <span>Soil Type:</span>
+                <span class="font-semibold">Black Cotton</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span>Avg. Rainfall:</span>
+                <span class="font-semibold">750mm</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-green-50 p-6 rounded-xl">
+          <h3 class="font-semibold mb-4">Recommended Crops</h3>
+          <div class="space-y-3">
+            <div class="crop-card bg-white p-4 rounded-lg transition-all">
+              <div class="flex justify-between items-center">
+                <span class="font-medium">Soybean</span>
+                <span class="prediction-badge px-3 py-1 rounded-full text-sm">89% Match</span>
+              </div>
+              <div class="text-sm text-gray-600 mt-2">
+                <p>Expected Yield: 2.8 ton/ha</p>
+                <p>Water Requirement: 450mm</p>
+              </div>
+            </div>
+            <!-- More crop cards -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cost Predictor -->
+    <div id="cost-predictor" class="content-card hidden">
+      <h2 class="text-3xl font-bold mb-6">Crop Cost Prediction</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-white p-6 rounded-lg shadow-sm">
+          <h3 class="font-semibold mb-4">Prediction Parameters</h3>
+          <div class="space-y-4">
+            <select class="w-full p-3 border rounded-lg">
+              <option>Select Crop</option>
+              <option>Cotton</option>
+              <option>Sugarcane</option>
+            </select>
+            <input type="number" placeholder="Land Area (ha)" class="w-full p-3 border rounded-lg">
+            <button class="w-full bg-green-600 text-white p-3 rounded-lg hover:bg-green-700">
+              Calculate Production Cost
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-green-50 p-6 rounded-xl">
+          <h3 class="font-semibold mb-4">Prediction Results</h3>
+          <div class="space-y-4">
+            <div class="flex justify-between">
+              <span>Estimated Cost:</span>
+              <span class="font-semibold">₹42,300/ha</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Expected Yield Value:</span>
+              <span class="font-semibold">₹68,500/ha</span>
+            </div>
+            <div class="bg-white p-4 rounded-lg">
+              <p class="text-sm text-gray-600">Cost Components:</p>
+              <div class="flex justify-between mt-2">
+                <span>Water:</span>
+                <span>₹8,400</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Water Analysis -->
+    <div id="water-analysis" class="content-card hidden">
+      <h2 class="text-3xl font-bold mb-6">Water Shortage Prediction</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-blue-50 p-6 rounded-xl">
+          <h3 class="font-semibold mb-4">District Water Status</h3>
+          <div class="water-warning bg-red-100 p-4 rounded-lg mb-4">
+            <div class="flex items-center">
+              <span class="text-red-600 mr-2">⚠️</span>
+              <p class="font-medium">Water Deficit Expected</p>
+            </div>
+            <p class="text-sm mt-2">Projected 35% shortage in next 60 days</p>
+          </div>
+          <div class="bg-white p-4 rounded-lg">
+            <p class="text-sm text-gray-600">Recommended Actions:</p>
+            <ul class="list-disc pl-5 mt-2">
+              <li>Implement drip irrigation</li>
+              <li>Prioritize drought-resistant crops</li>
+              <li>Schedule irrigation at night</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-sm">
+          <h3 class="font-semibold mb-4">Historical Water Availability</h3>
+          <div class="h-64 bg-gray-100 rounded-lg"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Navigation System
+    function showSection(sectionId) {
+      document.querySelectorAll('.content-card').forEach(el => el.classList.add('hidden'));
+      document.getElementById(sectionId).classList.remove('hidden');
+    }
+  
+    // Initialize default view
+    showSection('dashboard');
+    
+    // Logout Function
+    function logout() {
+      if (confirm('Are you sure you want to logout?')) {
+        window.location.href = 'login.html'; // Redirect to login.html
+      }
+    }
+  
+    // Add interactivity to cards
+    document.querySelectorAll('.crop-card').forEach(card => {
+      card.addEventListener('mouseover', () => {
+        card.style.transform = 'translateY(-5px)';
+      });
+      card.addEventListener('mouseout', () => {
+        card.style.transform = 'none';
+      });
+    });
+  </script>
+  
+</body>
+</html>
